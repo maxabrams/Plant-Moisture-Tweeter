@@ -100,7 +100,7 @@ def log(message):
 	output += message
 
 	print output
-	logOutput.write(output)
+	logOutput.write(output + '\n')
 
 # From playing with the sensor, ~70 is pure water and ~142 is 100% dry
 def makeTweet(moistureLevel):
