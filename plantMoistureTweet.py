@@ -18,8 +18,8 @@ import RPi.GPIO as GPIO
 import datetime
 import time
 
-SIX_HOURS_IN_SECONDS = 21600
-LOOP_DELAY_SECONDS = 10
+SIX_HOURS_IN_SECONDS = 60 * 60 * 6
+LOOP_DELAY_SECONDS = 60 * 15 # 15 mins
 
 # ADC Physical Pins
 ADC_CS  = 11
