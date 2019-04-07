@@ -100,7 +100,7 @@ def log(message):
 	output += message
 
 	print output
-	logOutput.write(output + '\n')
+	# not needed when using nohup logOutput.write(output + '\n')
 
 # From playing with the sensor, ~70 is pure water and ~142 is 100% dry
 def makeTweet(moistureLevel):
@@ -123,22 +123,28 @@ def makeTweet(moistureLevel):
 	return tweet
 
 def mainLoop():
-	lastTweet = ""
+	lastTweets = [None] * 2 # Keep a record of two to better handle sensor bouncing
 	while True:
 		moistureLevel = readSensor(0)
 
 		statusMsg =  makeTweet(moistureLevel)
 		if statusMsg != "":
-			if (statusMsg == lastTweet):
-				log("No change since last tweet. Will not try to tweet because Twitter will fail to post it.")
+			if (statusMsg in lastTweets):
+				log("No change since last tweet. Will not try to tweet because Twitter will fail to post it. Cache: " + str(lastTweets))
 				time.sleep(LOOP_DELAY_SECONDS)
 				continue
 
 			log("Msg: " + statusMsg)
 			try:
 				log("Sending tweet...")
-				lastTweet = statusMsg
+
+				# Update the cache
+				# This should actually be after a sucessful tweet (the first could fail). But keeping here to easily populate cache
+				lastTweets[1] = lastTweets[0]
+				lastTweets[0] = statusMsg
+
 				twitterConnection.update_status(status=statusMsg)
+
 				log("Tweet sent! Sleeping for: " + str(SIX_HOURS_IN_SECONDS) + " seconds")
 				time.sleep(SIX_HOURS_IN_SECONDS - LOOP_DELAY_SECONDS)
 
